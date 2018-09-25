@@ -1,5 +1,7 @@
 # SearchWayGL
 
+VisualStudio 2015
+
 В компоновщике в вкладке ввод в поле допю заваисмости добавь:
 opengl32.lib
 glut32.lib
