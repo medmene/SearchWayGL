@@ -1,11 +1,14 @@
 #include "Header.h"
 
+#define graphics
 std::vector<Point> vec;
+
+#ifdef graphics
 void Initialize()
 {
-	//Выбрать фоновый (очищающий) цвет
+	//Р’С‹Р±СЂР°С‚СЊ С„РѕРЅРѕРІС‹Р№ (РѕС‡РёС‰Р°СЋС‰РёР№) С†РІРµС‚
 	glClearColor(1.0, 0.0, 1.0, 1.0);
-	//Установить проекцию
+	//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїСЂРѕРµРєС†РёСЋ
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho(0.0, 1.6, 0.0, 0.9, -1.0, 1.0);
@@ -73,22 +76,28 @@ void Draw()
 	DrawSquad(0.9 - 5 * 0.1, 5 * 0.1, 3);
 	DrawSquad(0.9 - 6 * 0.1, 9 * 0.1, 3);
 }
+#endif // graphics
 
 void main(int argc, char **argv) {
 	Point st(5, 5), end(6,9);
 	std::vector<Point> way;
 	vec = searchWay(st, end, (int**)labirint);
-	/*for (int i = 0; i < vec.size(); ++i) {
+#ifndef graphics
+	for (int i = 0; i < vec.size(); ++i) {
 		labirintt[vec[i].x][vec[i].y] = i + 2;
 	}
-	PrintMap();*/
+	PrintMap();
+	system("pause");
+#else
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-	glutInitWindowSize(400, 225);		//Указываем размер окна
-	glutInitWindowPosition(1000, 700);	//Позиция окна
-	glutCreateWindow("Polygon");		//Имя окна
-	Initialize();						//Вызов функции Initialize
-	glutDisplayFunc(Draw);				//Вызов функции отрисовки
+	glutInitWindowSize(400, 225);		//РЈРєР°Р·С‹РІР°РµРј СЂР°Р·РјРµСЂ РѕРєРЅР°
+	glutInitWindowPosition(1000, 700);	//РџРѕР·РёС†РёСЏ РѕРєРЅР°
+	glutCreateWindow("Polygon");		//РРјСЏ РѕРєРЅР°
+	Initialize();						//Р’С‹Р·РѕРІ С„СѓРЅРєС†РёРё Initialize
+	glutDisplayFunc(Draw);				//Р’С‹Р·РѕРІ С„СѓРЅРєС†РёРё РѕС‚СЂРёСЃРѕРІРєРё
+
+	
 	glutMainLoop();
-	system("pause");
+#endif // !graphics
 }
