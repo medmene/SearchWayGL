@@ -3,9 +3,14 @@
 #include <Windows.h>
 #include <string>
 #include <vector>
-#include <glut.h>   //Подключение библиотеки glut.h
 
-/*лабиринты*/
+#define graphics
+
+#ifdef graphics
+#include <glut.h>   //РџРѕРґРєР»СЋС‡РµРЅРёРµ Р±РёР±Р»РёРѕС‚РµРєРё glut.h
+#endif // graphics
+
+/*Г«Г ГЎГЁГ°ГЁГ­ГІГ»*/
 int labirint[10][10] = {
 	{ 0,0,0,0,0,0,0,0,0,0 },
 	{ 0,0,0,0,0,0,0,0,0,0 },
@@ -42,29 +47,29 @@ int labirint2[9][16] = {
 	{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
 };
 
-//класс точка
+//ГЄГ«Г Г±Г± ГІГ®Г·ГЄГ 
 struct Point {	
-	int x; //х координата
-	int y; //у координата
-	//конструкторы
+	int x; //Гµ ГЄГ®Г®Г°Г¤ГЁГ­Г ГІГ 
+	int y; //Гі ГЄГ®Г®Г°Г¤ГЁГ­Г ГІГ 
+	//ГЄГ®Г­Г±ГІГ°ГіГЄГІГ®Г°Г»
 	Point() { x = 0; y = 0; }
 	Point(int _x, int _y) {
 		x = _x, y = _y;
 	}
-	//сравнение точек
+	//Г±Г°Г ГўГ­ГҐГ­ГЁГҐ ГІГ®Г·ГҐГЄ
 	const bool operator == (const Point &v2)
 	{
 		if ((x == v2.x) && (y == v2.y))
 			return true;
 		else return false;
 	}
-	//присваивание
+	//ГЇГ°ГЁГ±ГўГ ГЁГўГ Г­ГЁГҐ
 	Point operator = (Point v1)
 	{
 		this->x = v1.x, this->y = v1.y;
 		return *this;
 	}
-	//хз особо не надо
+	//ГµГ§ Г®Г±Г®ГЎГ® Г­ГҐ Г­Г Г¤Г®
 	friend Point operator - (Point p1, Point p2 ) {
 		return Point(p1.x - p2.x, p1.y - p2.y);
 	}
@@ -74,11 +79,11 @@ struct Point {
 };
 
 void PrintMap() {
-	//вывод карты на экран
+	//ГўГ»ГўГ®Г¤ ГЄГ Г°ГІГ» Г­Г  ГЅГЄГ°Г Г­
 	int i, j;
 	for (i = 0; i < 10; ++i) {
 		for (j = 0; j < 10; ++j) {
-			//формирование сдвига для десятичного числа
+			//ГґГ®Г°Г¬ГЁГ°Г®ГўГ Г­ГЁГҐ Г±Г¤ГўГЁГЈГ  Г¤Г«Гї Г¤ГҐГ±ГїГІГЁГ·Г­Г®ГЈГ® Г·ГЁГ±Г«Г 
 			if (labirintt[i][j] / 10 >= 1)
 				std::cout << labirintt[i][j] << " ";
 			else std::cout << labirintt[i][j] << "  ";
@@ -87,38 +92,38 @@ void PrintMap() {
 	}
 }
 
-//проверка на нахождение рядом точек
+//ГЇГ°Г®ГўГҐГ°ГЄГ  Г­Г  Г­Г ГµГ®Г¦Г¤ГҐГ­ГЁГҐ Г°ГїГ¤Г®Г¬ ГІГ®Г·ГҐГЄ
 bool linked(Point one, Point two) {
 	if (one.x == two.x) {
-		//если они по одной орркдинате х и не далеко по у
+		//ГҐГ±Г«ГЁ Г®Г­ГЁ ГЇГ® Г®Г¤Г­Г®Г© Г®Г°Г°ГЄГ¤ГЁГ­Г ГІГҐ Гµ ГЁ Г­ГҐ Г¤Г Г«ГҐГЄГ® ГЇГ® Гі
 		if (one.y == (two.y + 1) || one.y == (two.y - 1)) return true;
 		else return false;
 	}
 	else {
 		if (one.y == two.y) {
-			//если они по одной координате у и не далеко по х
+			//ГҐГ±Г«ГЁ Г®Г­ГЁ ГЇГ® Г®Г¤Г­Г®Г© ГЄГ®Г®Г°Г¤ГЁГ­Г ГІГҐ Гі ГЁ Г­ГҐ Г¤Г Г«ГҐГЄГ® ГЇГ® Гµ
 			if (one.x == (two.x + 1) || one.x == (two.x - 1)) return true;
 			else return false;
 		}
 		else return false;
 	}
 }
-//строим путь в квадратной карте
+//Г±ГІГ°Г®ГЁГ¬ ГЇГіГІГј Гў ГЄГўГ Г¤Г°Г ГІГ­Г®Г© ГЄГ Г°ГІГҐ
 std::vector<Point> buildWay(int **map, int max) {
-	int n = 10, mx = max; //размер поля и всего шагов сколько до цели
-	std::vector<Point> res; //итоговый путь
-	std::vector<std::vector<Point>> pp; //все существующие шаги
+	int n = 10, mx = max; //Г°Г Г§Г¬ГҐГ° ГЇГ®Г«Гї ГЁ ГўГ±ГҐГЈГ® ГёГ ГЈГ®Гў Г±ГЄГ®Г«ГјГЄГ® Г¤Г® Г¶ГҐГ«ГЁ
+	std::vector<Point> res; //ГЁГІГ®ГЈГ®ГўГ»Г© ГЇГіГІГј
+	std::vector<std::vector<Point>> pp; //ГўГ±ГҐ Г±ГіГ№ГҐГ±ГІГўГіГѕГ№ГЁГҐ ГёГ ГЈГЁ
 	int i = 0, j = 0;
-	//инициализируем
+	//ГЁГ­ГЁГ¶ГЁГ Г«ГЁГ§ГЁГ°ГіГҐГ¬
 	for (i = 0; i < max + 1; ++i)
 		pp.push_back(res);
-	//получаем все шаги впринципе написанные
+	//ГЇГ®Г«ГіГ·Г ГҐГ¬ ГўГ±ГҐ ГёГ ГЈГЁ ГўГЇГ°ГЁГ­Г¶ГЁГЇГҐ Г­Г ГЇГЁГ±Г Г­Г­Г»ГҐ
 	for (i = 0; i < n; ++i) 
 		for (int j = 0; j < n; ++j) 
 			if (labirint[i][j] != 0 && labirint[i][j] != 1)
 				pp[labirint[i][j]].push_back(Point(i, j));
 	int cheked = 0, jgood = 0;
-	Point badInd; //для возврата на предыдущий шаг
+	Point badInd; //Г¤Г«Гї ГўГ®Г§ГўГ°Г ГІГ  Г­Г  ГЇГ°ГҐГ¤Г»Г¤ГіГ№ГЁГ© ГёГ ГЈ
 	res.push_back(pp[pp.size() - 1][0]);
 	for (i = pp.size() - 2; i > 2; --i) {
 		if (pp[i].size() == 1) res.push_back(pp[i][0]);
@@ -130,13 +135,13 @@ std::vector<Point> buildWay(int **map, int max) {
 					res.push_back(pp[i][j]);
 					break;
 				}
-				else cheked++; //на случай отсутствия пути
+				else cheked++; //Г­Г  Г±Г«ГіГ·Г Г© Г®ГІГ±ГіГІГ±ГІГўГЁГї ГЇГіГІГЁ
 			}
 			if (cheked == pp[i].size()) {
 				jgood = badInd.y;
 				while (i != badInd.x) {
 					res.pop_back();
-					i++; //на шаг назад вернемся
+					i++; //Г­Г  ГёГ ГЈ Г­Г Г§Г Г¤ ГўГҐГ°Г­ГҐГ¬Г±Гї
 				}
 				cheked = 0;
 			}
@@ -148,22 +153,22 @@ std::vector<Point> buildWay(int **map, int max) {
 	}
 	return res;
 }
-//ищем путь в квадратной карте
+//ГЁГ№ГҐГ¬ ГЇГіГІГј Гў ГЄГўГ Г¤Г°Г ГІГ­Г®Г© ГЄГ Г°ГІГҐ
 std::vector<Point> searchWay(Point st, Point end, int **map) {
-	std::vector<Point> p; //сам путь кладём сюды
-	int n = 10, temp = 2; //n-размер поля
-	bool fl = true; //флаг для 
-	p.reserve(16*9); //выделяем место под путь
-	labirint[st.x][st.y] = 2; //ставим на стартовую позицию 2
+	std::vector<Point> p; //Г±Г Г¬ ГЇГіГІГј ГЄГ«Г Г¤ВёГ¬ Г±ГѕГ¤Г»
+	int n = 10, temp = 2; //n-Г°Г Г§Г¬ГҐГ° ГЇГ®Г«Гї
+	bool fl = true; //ГґГ«Г ГЈ Г¤Г«Гї 
+	p.reserve(16*9); //ГўГ»Г¤ГҐГ«ГїГҐГ¬ Г¬ГҐГ±ГІГ® ГЇГ®Г¤ ГЇГіГІГј
+	labirint[st.x][st.y] = 2; //Г±ГІГ ГўГЁГ¬ Г­Г  Г±ГІГ Г°ГІГ®ГўГіГѕ ГЇГ®Г§ГЁГ¶ГЁГѕ 2
 	while (labirint[end.x][end.y] == 0 && fl)
 	{
 		fl = false;
-		//проходим по всему полю
+		//ГЇГ°Г®ГµГ®Г¤ГЁГ¬ ГЇГ® ГўГ±ГҐГ¬Гі ГЇГ®Г«Гѕ
 		for (int i = 0; i < n; ++i) {
 			for (int j = 0; j < n; ++j) {
-				//если натыкаемся на нужный шаг путя
+				//ГҐГ±Г«ГЁ Г­Г ГІГ»ГЄГ ГҐГ¬Г±Гї Г­Г  Г­ГіГ¦Г­Г»Г© ГёГ ГЈ ГЇГіГІГї
 				if (labirint[i][j] == temp) { 
-					//расставляем следующие шаги
+					//Г°Г Г±Г±ГІГ ГўГ«ГїГҐГ¬ Г±Г«ГҐГ¤ГіГѕГ№ГЁГҐ ГёГ ГЈГЁ
 					if (j > 0 && labirint[i][j - 1] == 0)
 					{
 						labirint[i][j - 1] = temp + 1; 
@@ -187,12 +192,12 @@ std::vector<Point> searchWay(Point st, Point end, int **map) {
 				}
 			}
 		}
-		temp++; //увеличиваем шаг путя
+		temp++; //ГіГўГҐГ«ГЁГ·ГЁГўГ ГҐГ¬ ГёГ ГЈ ГЇГіГІГї
 	}
 	p = buildWay(map, temp);
 	return p;
 }
-//строим путь
+//Г±ГІГ°Г®ГЁГ¬ ГЇГіГІГј
 std::vector<Point> buildWayG(int **map, int max) {
 	int n = 10, mx = max;
 	std::vector<Point> res;
@@ -219,13 +224,13 @@ std::vector<Point> buildWayG(int **map, int max) {
 					res.push_back(pp[i][j]);
 					break;
 				}
-				else cheked++; //на случай отсутствия пути
+				else cheked++; //Г­Г  Г±Г«ГіГ·Г Г© Г®ГІГ±ГіГІГ±ГІГўГЁГї ГЇГіГІГЁ
 			}
 			if (cheked == pp[i].size()) {
 				jgood = badInd.y;
 				while (i != badInd.x) {
 					res.pop_back();
-					i++; //на шаг назад вернемся
+					i++; //Г­Г  ГёГ ГЈ Г­Г Г§Г Г¤ ГўГҐГ°Г­ГҐГ¬Г±Гї
 				}
 				cheked = 0;
 			}
@@ -237,7 +242,7 @@ std::vector<Point> buildWayG(int **map, int max) {
 	}
 	return res;
 }
-//ищем путь
+//ГЁГ№ГҐГ¬ ГЇГіГІГј
 std::vector<Point> searchWayG(Point st, Point end, int **map) {
 	std::vector<Point> p; //way
 	int nn = 10, temp = 2; //size
