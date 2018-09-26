@@ -10,7 +10,6 @@
 #include <glut.h>   //Подключение библиотеки glut.h
 #endif // graphics
 
-/*ëàáèðèíòû*/
 int labirint[10][10] = {
 	{ 0,0,0,0,0,0,0,0,0,0 },
 	{ 0,0,0,0,0,0,0,0,0,0 },
@@ -47,29 +46,28 @@ int labirint2[9][16] = {
 	{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
 };
 
-//êëàññ òî÷êà
+
 struct Point {	
-	int x; //õ êîîðäèíàòà
-	int y; //ó êîîðäèíàòà
-	//êîíñòðóêòîðû
+	int x; 
+	int y; 
 	Point() { x = 0; y = 0; }
 	Point(int _x, int _y) {
 		x = _x, y = _y;
 	}
-	//ñðàâíåíèå òî÷åê
+	
 	const bool operator == (const Point &v2)
 	{
 		if ((x == v2.x) && (y == v2.y))
 			return true;
 		else return false;
 	}
-	//ïðèñâàèâàíèå
+	
 	Point operator = (Point v1)
 	{
 		this->x = v1.x, this->y = v1.y;
 		return *this;
 	}
-	//õç îñîáî íå íàäî
+	
 	friend Point operator - (Point p1, Point p2 ) {
 		return Point(p1.x - p2.x, p1.y - p2.y);
 	}
@@ -78,12 +76,10 @@ struct Point {
 	}
 };
 
-void PrintMap() {
-	//âûâîä êàðòû íà ýêðàí
+void PrintMap() {	
 	int i, j;
 	for (i = 0; i < 10; ++i) {
-		for (j = 0; j < 10; ++j) {
-			//ôîðìèðîâàíèå ñäâèãà äëÿ äåñÿòè÷íîãî ÷èñëà
+		for (j = 0; j < 10; ++j) {			
 			if (labirintt[i][j] / 10 >= 1)
 				std::cout << labirintt[i][j] << " ";
 			else std::cout << labirintt[i][j] << "  ";
@@ -92,38 +88,32 @@ void PrintMap() {
 	}
 }
 
-//ïðîâåðêà íà íàõîæäåíèå ðÿäîì òî÷åê
 bool linked(Point one, Point two) {
 	if (one.x == two.x) {
-		//åñëè îíè ïî îäíîé îððêäèíàòå õ è íå äàëåêî ïî ó
 		if (one.y == (two.y + 1) || one.y == (two.y - 1)) return true;
 		else return false;
 	}
 	else {
 		if (one.y == two.y) {
-			//åñëè îíè ïî îäíîé êîîðäèíàòå ó è íå äàëåêî ïî õ
 			if (one.x == (two.x + 1) || one.x == (two.x - 1)) return true;
 			else return false;
 		}
 		else return false;
 	}
 }
-//ñòðîèì ïóòü â êâàäðàòíîé êàðòå
 std::vector<Point> buildWay(int **map, int max) {
-	int n = 10, mx = max; //ðàçìåð ïîëÿ è âñåãî øàãîâ ñêîëüêî äî öåëè
-	std::vector<Point> res; //èòîãîâûé ïóòü
-	std::vector<std::vector<Point>> pp; //âñå ñóùåñòâóþùèå øàãè
+	int n = 10, mx = max; 
+	std::vector<Point> res; 
+	std::vector<std::vector<Point>> pp; 
 	int i = 0, j = 0;
-	//èíèöèàëèçèðóåì
 	for (i = 0; i < max + 1; ++i)
 		pp.push_back(res);
-	//ïîëó÷àåì âñå øàãè âïðèíöèïå íàïèñàííûå
 	for (i = 0; i < n; ++i) 
 		for (int j = 0; j < n; ++j) 
 			if (labirint[i][j] != 0 && labirint[i][j] != 1)
 				pp[labirint[i][j]].push_back(Point(i, j));
 	int cheked = 0, jgood = 0;
-	Point badInd; //äëÿ âîçâðàòà íà ïðåäûäóùèé øàã
+	Point badInd; 
 	res.push_back(pp[pp.size() - 1][0]);
 	for (i = pp.size() - 2; i > 2; --i) {
 		if (pp[i].size() == 1) res.push_back(pp[i][0]);
@@ -135,13 +125,13 @@ std::vector<Point> buildWay(int **map, int max) {
 					res.push_back(pp[i][j]);
 					break;
 				}
-				else cheked++; //íà ñëó÷àé îòñóòñòâèÿ ïóòè
+				else cheked++; 
 			}
 			if (cheked == pp[i].size()) {
 				jgood = badInd.y;
 				while (i != badInd.x) {
 					res.pop_back();
-					i++; //íà øàã íàçàä âåðíåìñÿ
+					i++; 
 				}
 				cheked = 0;
 			}
@@ -153,22 +143,18 @@ std::vector<Point> buildWay(int **map, int max) {
 	}
 	return res;
 }
-//èùåì ïóòü â êâàäðàòíîé êàðòå
 std::vector<Point> searchWay(Point st, Point end, int **map) {
-	std::vector<Point> p; //ñàì ïóòü êëàä¸ì ñþäû
-	int n = 10, temp = 2; //n-ðàçìåð ïîëÿ
-	bool fl = true; //ôëàã äëÿ 
-	p.reserve(16*9); //âûäåëÿåì ìåñòî ïîä ïóòü
-	labirint[st.x][st.y] = 2; //ñòàâèì íà ñòàðòîâóþ ïîçèöèþ 2
+	std::vector<Point> p; 
+	int n = 10, temp = 2; 
+	bool fl = true; 
+	p.reserve(16*9); 
+	labirint[st.x][st.y] = 2; 
 	while (labirint[end.x][end.y] == 0 && fl)
 	{
 		fl = false;
-		//ïðîõîäèì ïî âñåìó ïîëþ
 		for (int i = 0; i < n; ++i) {
 			for (int j = 0; j < n; ++j) {
-				//åñëè íàòûêàåìñÿ íà íóæíûé øàã ïóòÿ
 				if (labirint[i][j] == temp) { 
-					//ðàññòàâëÿåì ñëåäóþùèå øàãè
 					if (j > 0 && labirint[i][j - 1] == 0)
 					{
 						labirint[i][j - 1] = temp + 1; 
@@ -192,12 +178,11 @@ std::vector<Point> searchWay(Point st, Point end, int **map) {
 				}
 			}
 		}
-		temp++; //óâåëè÷èâàåì øàã ïóòÿ
+		temp++; 
 	}
 	p = buildWay(map, temp);
 	return p;
 }
-//ñòðîèì ïóòü
 std::vector<Point> buildWayG(int **map, int max) {
 	int n = 10, mx = max;
 	std::vector<Point> res;
@@ -224,13 +209,13 @@ std::vector<Point> buildWayG(int **map, int max) {
 					res.push_back(pp[i][j]);
 					break;
 				}
-				else cheked++; //íà ñëó÷àé îòñóòñòâèÿ ïóòè
+				else cheked++; 
 			}
 			if (cheked == pp[i].size()) {
 				jgood = badInd.y;
 				while (i != badInd.x) {
 					res.pop_back();
-					i++; //íà øàã íàçàä âåðíåìñÿ
+					i++; 
 				}
 				cheked = 0;
 			}
@@ -242,7 +227,6 @@ std::vector<Point> buildWayG(int **map, int max) {
 	}
 	return res;
 }
-//èùåì ïóòü
 std::vector<Point> searchWayG(Point st, Point end, int **map) {
 	std::vector<Point> p; //way
 	int nn = 10, temp = 2; //size
