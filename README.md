@@ -13,4 +13,6 @@ https://github.com/medmene/opengl-examples/tree/master/GLUT%20OpenGL
 
 http://www.opengl.org.ru/coding/glut/glut2.html
 
+http://glew.sourceforge.net/
+
 MS Visual Studio 2015
